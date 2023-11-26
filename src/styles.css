@@ -1,0 +1,55 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@font-face {
+    font-family: 'VCR OSD Mono';
+    src: local('VCR OSD Mono'), url('./fonts/VCR_OSD_MONO_1.001.ttf') format('truetype');
+    /* Adjust the font file path and format based on your downloaded font file */
+  }
+
+@font-face {
+  font-family: 'Pixeboy';
+  src: url('./fonts/Pixeboy-z8XGD.ttf') format('truetype');
+  /* Adjust the font file path and format based on your downloaded Pixeboy font file */
+}
+
+body {
+    font-family: 'Pixeboy', sans-serif;
+}
+
+.app-main {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-areas:
+  'one'
+  'two'
+  'three'
+  'four'
+  'five';
+}
+.data-square:nth-child(1) {
+  grid-area: one;
+}
+.data-square:nth-child(2) {
+  grid-area: two;
+}
+.data-square:nth-child(3) {
+  grid-area: three;
+}
+.data-square:nth-child(4) {
+  grid-area: four;
+}
+.data-square:nth-child(5) {
+  grid-area: five;
+}
+
+@media (min-width: 50em) {
+  .app-main {
+    grid-template-areas:
+    'one one one five'
+    'two three four five';
+  }
+}

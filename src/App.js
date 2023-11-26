@@ -2,6 +2,7 @@ import './App.css';
 import { useEffect, useState } from 'react'
 import Main from './components/Main'
 import Header from './components/Header'
+import { kelvinToFahrenheit, windDirection } from './apiFunctions';
 
 const getLocationData = () => {
   const requestObj = {
@@ -10,8 +11,6 @@ const getLocationData = () => {
   }
   return requestObj
 }
-
-
 
 function App() {
   const [coord, setCoord] = useState({
@@ -25,7 +24,8 @@ function App() {
     temp_feel: "ok",
     temp_min: "not bad",
     temp_max: "not good",
-    pressure: "meh"
+    pressure: "meh",
+    humidity: ""
   })
   const [weatherObj, setWeatherObj] = useState({
     clouds:'hmm',
@@ -45,20 +45,23 @@ function App() {
       setLocation({place: jsonWeatherData.name,
                    country: jsonWeatherData.sys.country,
                    timezone: jsonWeatherData.timezone})
-      setTemperatureObj({temp: jsonWeatherData.main.temp,
-                         temp_feel: jsonWeatherData.main.feels_like,
-                         temp_min: jsonWeatherData.main.temp_min,
-                         temp_max: jsonWeatherData.main.temp_max,
-                         pressure: jsonWeatherData.main.pressure
+      setTemperatureObj({temp: kelvinToFahrenheit(jsonWeatherData.main.temp),
+                         temp_feel: kelvinToFahrenheit(jsonWeatherData.main.feels_like),
+                         temp_min: kelvinToFahrenheit(jsonWeatherData.main.temp_min),
+                         temp_max: kelvinToFahrenheit(jsonWeatherData.main.temp_max),
+                         pressure: jsonWeatherData.main.pressure,
+                         humidity: jsonWeatherData.main.humidity
                         })
       setWeatherObj({clouds: jsonWeatherData.weather[0].description,
-                     wind: {speed: jsonWeatherData.wind.speed,
-                            deg: jsonWeatherData.wind.deg,
+                     wind: {speed: ((jsonWeatherData.wind.speed)*(2.237)).toFixed(0),
+                            deg: windDirection(jsonWeatherData.wind.deg),
                             gust: jsonWeatherData.wind.gust}})
       setSunObj({sunrise: jsonWeatherData.sys.sunrise,
                  sunset: jsonWeatherData.sys.sunset})
+      console.log("This is the fahrenheit ", kelvinToFahrenheit(jsonWeatherData.main.temp))
       console.log(jsonWeatherData)
       console.log(jsonWeatherData.weather[0].description)
+      console.log("this is the gust", jsonWeatherData.wind.gust)
     } catch (error) {
       console.error(error)
     }
@@ -70,20 +73,16 @@ function App() {
   }, [])
 
   return (
-    <div className="App">
+    <div className="App bg-blue-200">
       <Header />
-      <p>Coordinates: {coord.lat}, {coord.lon}</p>
-      <p>location: {location.place}, {location.country}</p>
-      <p>Timezone: {location.timezone}</p>
-      <p>
-        Temperature: {temperatureObj.temp}, Feels like: {temperatureObj.temp_feel}, Min: {temperatureObj.temp_min}, Max: {temperatureObj.temp_max}
-      </p>
-      <p>Sunrise: {sunObj.sunrise}, Sunset: {sunObj.sunset}</p>
-      <p>Pressure:  {temperatureObj.pressure}</p>
-      <Main />
-      <p>{weatherObj.clouds}</p>
-      <h4>Wind</h4>
-      <p>speed: {weatherObj.wind.speed} deg: {weatherObj.wind.deg}  gust: {weatherObj.wind.gust} </p>
+      <Main lat={coord.lat} lon={coord.lon} place={location.place}
+            country={location.country} timezone={location.timezone} temp={temperatureObj.temp}
+            temp_feel={temperatureObj.temp_feel} temp_min={temperatureObj.temp_min}
+            temp_max={temperatureObj.temp_max}
+            sunrise={sunObj.sunrise} sunset={sunObj.sunset} pressure={temperatureObj.pressure}
+            humidity={temperatureObj.humidity}
+            clouds={weatherObj.clouds} speed={weatherObj.wind.speed} deg={weatherObj.wind.deg}
+            gust={weatherObj.wind.gust} />
     </div>
   );
 }
